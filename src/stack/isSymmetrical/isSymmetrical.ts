@@ -1,3 +1,8 @@
+/**
+ * 判断元素对称性
+ * @example
+ * 字符串 "()"有效、"()[]{}"有效、"(]"无效、"([)]"无效、"{[]}"有效
+ */
 export function isSymmetrical(context: string, closureTags: [string, string][]) {
   const chars = context.split('')
   const [openTags, closeTags] = closureTags.reduce(

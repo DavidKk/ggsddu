@@ -1,6 +1,9 @@
 # Dest resouces
+/@algorithm/*/dist
+/@scripts/*/dist
 /dist
 
+.husky
 
 # Npm or Yarn
 node_modules

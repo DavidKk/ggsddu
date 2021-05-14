@@ -1,0 +1,30 @@
+.bar {
+  position: absolute;
+  bottom: 0;
+  box-sizing: content-box;
+  display: inline-flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-grow: 1;
+  border: 1px solid #ff3179;
+  padding-bottom: 30px;
+  background-color: #000;
+  box-shadow: 0 0 25px #c2255c;
+  color: #fff;
+  transition: border-color .3s ease-in-out, box-shadow .3s ease-in-out;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.value {
+  position: absolute;
+  bottom: 10px;
+  font-size: 14px;
+  font-weight: bolder;
+}
