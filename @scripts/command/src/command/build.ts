@@ -85,7 +85,6 @@ program
   .command('build')
   .description('Build the marketing tool by webpack')
   .option('--public-path [publicPath]', 'specify public path of webpack output (default use http://[host]:[port])')
-  .option('--remote-path [remotePath]', 'specify remote path of webpack module federation (default use public path)')
   .option('--packages <packages...>', 'specify packages of monorepo (default use lerna)')
   .option('--include <include...>', 'specify ignore packages (eg. /bar/foo/*)')
   .option('--exclude <exclude...>', 'specify filter packages')

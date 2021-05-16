@@ -101,7 +101,6 @@ program
   .option('-p, --port [port]', 'specify server port (default use 0.0.0.0)')
   .option('-H, --host [host]', 'specify server host (default use 3000)')
   .option('--public-path [publicPath]', 'specify public path of webpack output (default use http://[host]:[port])')
-  .option('--remote-path [remotePath]', 'specify remote path of webpack module federation (default use public path)')
   .option('--packages <packages...>', 'specify packages of monorepo (default use lerna)')
   .option('--include <include...>', 'specify ignore packages (eg. /bar/foo/*)')
   .option('--exclude <exclude...>', 'specify filter packages')
