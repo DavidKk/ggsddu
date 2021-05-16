@@ -7,8 +7,8 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "build": "rimraf ./dist && npx babel ./src --config-file ./.babelrc.js --out-dir ./dist --extensions .ts,.tsx",
-    "develop": "rimraf ./dist && npx babel ./src --config-file ./.babelrc.js --out-dir ./dist --extensions .ts,.tsx --watch",
+    "build": "rimraf ./dist && babel ./src --config-file ./.babelrc.js --out-dir ./dist --extensions .ts,.tsx",
+    "develop": "rimraf ./dist && babel ./src --config-file ./.babelrc.js --out-dir ./dist --extensions .ts,.tsx --watch",
     "start": "npm run develop"
   },
   "dependencies": {

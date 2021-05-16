@@ -8,13 +8,13 @@ cache:
     - node_modules
 
 install:
-  - npm install
+  - yarn install
 
 script:
-  - npm run test
+  - yarn build
 
 before_deploy:
-  - npm run build
+  - yarn build
 
 deploy:
   - provider: pages
