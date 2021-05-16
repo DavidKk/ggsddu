@@ -1,8 +1,9 @@
-import defs from '../libs/footprint'
+import defs from '@/libs/footprint'
+import code from './code.md'
 
+/** 插入排序 */
 export default function insertionSort(numbers: number[]) {
-  const { compare, insert, idle, mark, freeze, end, flush } = defs(numbers)
-
+  const { compare, insert, idle, freeze, end, flush } = defs(numbers)
   for (let i = 1; i < numbers.length; i++) {
     freeze([i - 1])
 
@@ -13,21 +14,23 @@ export default function insertionSort(numbers: number[]) {
 
       compare(cursor, cursor - 1)
       if (prev < curr) {
+        idle()
         break
       }
 
       numbers.splice(cursor, 1)
       numbers.splice(cursor - 1, 0, curr)
+
       insert(cursor, cursor - 1)
       idle()
 
       cursor--
     }
-
-    mark([cursor])
   }
 
   end()
 
   return flush()
 }
+
+export { code }

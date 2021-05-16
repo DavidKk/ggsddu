@@ -42,7 +42,7 @@
     // 有未使用的变量时，抛出错误
     "noUnusedLocals": false,
     // 有未使用的参数时，抛出错误
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     // 并不是所有函数里的代码都有返回值时，抛出错误
     "noImplicitReturns": false,
     // 报告 switch 语句的 fallthrough 错误。（即，不允许 switch 的 case 语句贯穿）
@@ -51,16 +51,17 @@
     /* 模块解析选项 */
     // 模块解析策略
     "moduleResolution": "node",
+    // 指定输入文件的根目录, 仅用于通过来控制输出目录结构 --outDir
     "rootDir": ".",
-    // 用于解析非相对模块名称的基目录
+    // 用于解析非相对模块名称的基目录，主要用于解析 paths
     "baseUrl": ".",
     // 模块名到基于 baseUrl 的路径映射的列表
-    "paths": {},
+    // "paths": {},
     // 根文件夹列表，其组合内容表示项目运行时的结构内容
-    "rootDirs": [],
-    // 包含类型声明的文件列表
-    "typeRoots": ["./node_modules/@types"],
-    // 需要包含的类型声明文件名列表(为空会忽略声明文件)
+    // "rootDirs": [],
+    // 包含类型声明的文件列表, 与上述路径指定没任何关系
+    "typeRoots": ["node_modules/@types"],
+    // 需要包含的类型声明文件名列表
     // "types": [],
     // 允许从没有设置默认导出的模块中默认导入
     "allowSyntheticDefaultImports": true,
@@ -90,5 +91,5 @@
   // 包含文件
   "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],
   // 排除文件
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "./@scripts/command/src/template"]
 }

@@ -116,6 +116,17 @@ export default async function createWebpackConfig(params: CreateParams) {
         },
       ],
     },
+    {
+      test: /\.md$/i,
+      use: [
+        {
+          loader: 'raw-loader',
+          options: {
+            esModule: false,
+          },
+        },
+      ],
+    },
   ]
 
   const progressName = `${startCase(shortName)}${description ? ` - ${description}` : ''}`
@@ -144,7 +155,7 @@ export default async function createWebpackConfig(params: CreateParams) {
       extensions: ['.tsx', '.ts', '.js'],
       plugins: [
         new TsconfigPathsPlugin({
-          configFile: path.join(srcPath, 'tsconfig.json'),
+          configFile: path.join(location, 'tsconfig.json'),
         }),
       ],
     },

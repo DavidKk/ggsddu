@@ -1,7 +1,10 @@
-import defs from '../libs/footprint'
+import defs from '@/libs/footprint'
+import code from './code.md'
 
+/** 选择排序 */
 export default function selectionSort(numbers: number[]) {
   const { idle, compare, swap, freeze, freed, end, flush } = defs(numbers)
+
   let index = 0
   for (let i = 0; i < numbers.length; i++) {
     freeze([i])
@@ -21,10 +24,12 @@ export default function selectionSort(numbers: number[]) {
     numbers[index] = numbers[i]
     numbers[i] = t
 
-    freed()
+    freed([i])
   }
 
   end()
 
   return flush()
 }
+
+export { code }

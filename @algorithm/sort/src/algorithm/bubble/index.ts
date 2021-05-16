@@ -1,5 +1,7 @@
-import defs from '../libs/footprint'
+import defs from '@/libs/footprint'
+import code from './code.md'
 
+/** 冒泡排序 */
 export default function bubbleSort(numbers: number[]) {
   const { compare, swap, idle, mark, freeze, end, flush } = defs(numbers)
   for (let i = 0; i < numbers.length - 1; i++) {
@@ -24,3 +26,5 @@ export default function bubbleSort(numbers: number[]) {
   end()
   return flush()
 }
+
+export { code }

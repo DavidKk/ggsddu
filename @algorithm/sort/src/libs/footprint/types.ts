@@ -34,6 +34,7 @@ export interface Freeze {
 
 export interface Freed {
   type: 'FREED'
+  payload: number[]
 }
 
 export interface End {

@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useRef, MutableRefObject } from 'react'
+import { Action } from '@/libs/footprint/types'
 import Bar, { BarImperativeRef } from './components/Bar'
 import Slider, { SliderImperativeRef } from './components/Slider'
-import { Action } from '../../../libs/footprint/types'
 import styles from './styles.module.scss'
 
 type BarVisualizerProps = {
@@ -27,7 +27,7 @@ const BarVisualizer: React.FC<BarVisualizerProps> = React.memo(
     const maxValue = useMemo(() => Math.max(...numbers), [numbers])
     const position = useMemo(() => {
       const widthVolumn = 100 / numbers.length
-      const width = `calc(${widthVolumn}% - 10px)`
+      const width = `calc(${widthVolumn}% - var(--gutter-size))`
       return numbers.map((_, index) => {
         /**
          * margin: 0 10px
@@ -124,7 +124,8 @@ const BarVisualizer: React.FC<BarVisualizerProps> = React.memo(
           case 'FREED': {
             return async function freed(): Promise<void> {
               const { current: scopes } = sliderRefs
-              await Promise.all(scopes.map((scope) => scope.idle()))
+              const indexes = step.payload
+              await Promise.all(indexes.map((index) => scopes[index].freed()))
             }
           }
 
@@ -146,9 +147,9 @@ const BarVisualizer: React.FC<BarVisualizerProps> = React.memo(
         {Array.isArray(numbers)
           ? numbers.map((value, index) => {
               const { width, left } = position[index]
-              const height = `${(value / maxValue) * 100}%`
+              const height = `calc(${(value / maxValue) * 100}% - 30px - 10px - 2px)`
               return (
-                <Fragment key={value}>
+                <Fragment key={`${value}-${index}`}>
                   <Bar width={width} height={height} offset={left} value={value} options={{ duration }} ref={collectImperativeRef(barRefs)} />
                   <Slider width={width} offset={left} options={{ duration }} ref={collectImperativeRef(sliderRefs)} />
                 </Fragment>

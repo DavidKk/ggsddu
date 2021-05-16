@@ -73,8 +73,8 @@ export default class Footprint<T> {
     return this
   }
 
-  public freed() {
-    const step: Types.Freed = { type: 'FREED' }
+  public freed(indexes: number[]) {
+    const step: Types.Freed = { type: 'FREED', payload: indexes }
     this.steps.push(step)
     return this
   }

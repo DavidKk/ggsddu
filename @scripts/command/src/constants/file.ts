@@ -20,3 +20,6 @@ export const MEDIA_NAME = isProduction ? 'media/[name].[hash:8].[ext]' : 'media/
 
 /** 字体资源名 */
 export const FONT_NAME = isProduction ? 'font/[name].[hash:8].[ext]' : 'font/[name].[ext]'
+
+/** Markdown */
+export const MD_NAME = isProduction ? 'mark/[name].[hash:8].[ext]' : 'mark/[name].[ext]'

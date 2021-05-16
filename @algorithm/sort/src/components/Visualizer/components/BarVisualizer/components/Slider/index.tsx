@@ -1,6 +1,6 @@
 import React, { useCallback, useImperativeHandle, useRef } from 'react'
+import asyncAnime from '@/utils/asyncAnime'
 import { Colors, Easing } from '../../constants/styles'
-import asyncAnime from '../../../../../utils/asyncAnime'
 import styles from './styles.module.scss'
 
 export interface SliderProps {

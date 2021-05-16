@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 640px;
+
+  --gutter-size: 10px;
+}
+
+.visualizer {
+  box-sizing: content-box;
+  padding-bottom: 10px;
+  width: 100%;
+  min-height: 160px;
+  border-bottom: 1px solid #fff;
+}
+
+.name {
+  margin: 0;
+  padding: 20px 0;
+  color: #fff;
+  text-align: center;
+  font-family: Menlo, monospace;
+  font-size: 15px;
+  font-weight: 400;
+  user-select: none;
+}
+
+@media (max-width: 750px) {
+  .container {
+    --gutter-size: 5px;
+  }
+}
