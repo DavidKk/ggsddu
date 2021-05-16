@@ -1,17 +1,16 @@
-.bar {
+.slider {
   position: absolute;
-  bottom: 10px;
+  bottom: 0;
   box-sizing: content-box;
   display: inline-flex;
   justify-content: center;
-  align-items: flex-end;
-  flex-grow: 1;
+  align-items: center;
   border: 1px solid #ff3179;
-  border-radius: 4px;
-  padding-bottom: 30px;
-  height: 100%;
+  border-radius: 1px;
+  height: 3px;
   color: #fff;
   box-shadow: 0 0 25px #c2255c;
+  background-color: #ff3179;
   transition: border-color .3s ease-in-out, box-shadow .3s ease-in-out, background-color .3s ease-in-out;
 
   &:first-child {
@@ -21,16 +20,4 @@
   &:last-child {
     margin-right: 0;
   }
-}
-
-.value {
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  line-height: 30px;
-  font-size: 14px;
-  font-weight: bolder;
 }

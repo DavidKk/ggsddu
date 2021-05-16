@@ -6,6 +6,7 @@ import { ValuesType } from 'utility-types'
 type UISelectOptions = {
   yes?: boolean
   exclude?: string[]
+  required?: boolean
 }
 
 /**
@@ -14,7 +15,7 @@ type UISelectOptions = {
  * @param choicesGenerator 选项生成器
  */
 export function gSel<C extends Types.ChoicesGenerators>(initialOptions: inquirer.ListQuestionOptions = {}, choicesGenerator: C = SelectOptions as any, uiOptions: UISelectOptions) {
-  const { yes = false, ...otherOptions } = uiOptions || {}
+  const { yes = false, required = true, ...otherOptions } = uiOptions || {}
   return function <T extends keyof C>(type: T) {
     return async function (message: string, ...args: Parameters<C[T]>): Promise<ValuesType<Types.Choices>> {
       const context = choicesGenerator[type]
@@ -29,6 +30,10 @@ export function gSel<C extends Types.ChoicesGenerators>(initialOptions: inquirer
 
       if (yes) {
         return null
+      }
+
+      if (required === true && choices.length === 1) {
+        return choices[0]
       }
 
       const { selected } = await inquirer.prompt({
@@ -55,7 +60,7 @@ export function gMultiSel<C extends Types.ChoicesGenerators>(
   choicesGenerator: C = SelectOptions as any,
   uiOptions: UISelectOptions
 ) {
-  const { yes = false, ...otherOptions } = uiOptions || {}
+  const { yes = false, required = true, ...otherOptions } = uiOptions || {}
   return function <T extends keyof C>(type: T) {
     return async function (message: string, ...args: Parameters<C[T]>): Promise<Types.Choices> {
       const context = choicesGenerator[type]
@@ -70,6 +75,10 @@ export function gMultiSel<C extends Types.ChoicesGenerators>(
 
       if (yes) {
         return []
+      }
+
+      if (required === true && choices.length === 1) {
+        return choices
       }
 
       const { selected } = await inquirer.prompt({

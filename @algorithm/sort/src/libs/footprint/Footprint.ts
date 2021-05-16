@@ -1,7 +1,7 @@
 import * as Types from './types'
 
 export default class Footprint<T> {
-  protected steps: Types.Steps<T>
+  protected steps: Types.Action<T>[]
   protected current: number
 
   constructor() {
@@ -32,31 +32,55 @@ export default class Footprint<T> {
   }
 
   public defs(data: T[]) {
-    const step: Types.DefStep<T> = { type: 'DEFS', payload: [...data] }
+    const step: Types.Def<T> = { type: 'DEFS', payload: [...data] }
+    this.steps.push(step)
+    return this
+  }
+
+  public idle() {
+    const step: Types.Idle = { type: 'IDLE' }
     this.steps.push(step)
     return this
   }
 
   public compare(aIndex: number, bIndex: number) {
-    const step: Types.CompareStep = { type: 'COMPARE', payload: [aIndex, bIndex] }
+    const step: Types.Compare = { type: 'COMPARE', payload: [aIndex, bIndex] }
     this.steps.push(step)
     return this
   }
 
-  public exchange(aIndex: number, bIndex: number) {
-    const step: Types.ExchangeStep = { type: 'EXCHANGE', payload: [aIndex, bIndex] }
+  public swap(aIndex: number, bIndex: number) {
+    const step: Types.Swap = { type: 'SWAP', payload: [aIndex, bIndex] }
     this.steps.push(step)
     return this
   }
 
-  public update(data: T[]) {
-    const step: Types.UpdateStep<T> = { type: 'UPDATE', payload: [...data] }
+  public insert(origin: number, target: number) {
+    const step: Types.Insert = { type: 'INSERT', payload: { origin, target } }
+    this.steps.push(step)
+    return this
+  }
+
+  public mark(indexes: number[]) {
+    const step: Types.Mark = { type: 'MARK', payload: indexes }
+    this.steps.push(step)
+    return this
+  }
+
+  public freeze(indexes: number[]) {
+    const step: Types.Freeze = { type: 'FREEZE', payload: indexes }
+    this.steps.push(step)
+    return this
+  }
+
+  public freed() {
+    const step: Types.Freed = { type: 'FREED' }
     this.steps.push(step)
     return this
   }
 
   public end() {
-    const step: Types.EndStep = { type: 'END' }
+    const step: Types.End = { type: 'END' }
     this.steps.push(step)
     return this
   }

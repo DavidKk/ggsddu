@@ -1,22 +1,29 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import anime from 'animejs'
-import Bar from './components/Bar'
-import { Steps } from '../../../libs/footprint/types'
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, MutableRefObject } from 'react'
+import Bar, { BarImperativeRef } from './components/Bar'
+import Slider, { SliderImperativeRef } from './components/Slider'
+import { Action } from '../../../libs/footprint/types'
 import styles from './styles.module.scss'
-import barStyles from './components/Bar/styles.module.scss'
 
 type BarVisualizerProps = {
   numbers: number[]
-  steps: Steps<number>
+  steps: Action<number>[]
   duration?: number
-  padding?: number
+  interval?: number
+}
+
+function collectRef(refs: MutableRefObject<BarImperativeRef[]>): (scope: BarImperativeRef) => Promise<void>
+function collectRef(refs: MutableRefObject<SliderImperativeRef[]>): (scope: SliderImperativeRef) => Promise<void>
+function collectRef(refs: MutableRefObject<any>) {
+  return (scope: any) => refs.current.push(scope)
 }
 
 const BarVisualizer: React.FC<BarVisualizerProps> = React.memo(
   (props) => {
-    const { numbers, steps, duration, padding } = props
-    const barRefs = useRef<HTMLDivElement[]>([])
-    const collect = useCallback<(el: HTMLDivElement) => void>((el) => barRefs.current.push(el), [])
+    const { numbers, steps, duration, interval } = props
+    const barRefs = useRef<BarImperativeRef[]>([])
+    const sliderRefs = useRef<SliderImperativeRef[]>([])
+    const collectImperativeRef = useCallback(collectRef, [])
+
     const maxValue = useMemo(() => Math.max(...numbers), [numbers])
     const position = useMemo(() => {
       const widthVolumn = 100 / numbers.length
@@ -32,58 +39,102 @@ const BarVisualizer: React.FC<BarVisualizerProps> = React.memo(
       })
     }, [numbers])
 
-    const waterfall = useCallback<(waters: Array<() => Promise<void>>) => Promise<void>>(async (waters) => {
-      const [fnc, ...rest] = waters
-      await fnc()
-      rest.length > 0 && waterfall(rest)
-    }, [])
+    const waterfall = useCallback<(waters: Array<() => Promise<void>>) => Promise<void>>(
+      async (waters) => {
+        if (Array.isArray(waters) && waters.length > 0) {
+          const [fnc, ...rest] = waters
+          await fnc()
+          rest.length > 0 && setTimeout(() => waterfall(rest), interval)
+        }
+      },
+      [interval]
+    )
 
     useEffect(() => {
       const animes = steps.map((step) => {
         switch (step.type) {
-          case 'COMPARE':
-            return function compare(): Promise<void> {
-              return new Promise<void>((resolve) => {
-                let times = 0
-                const complete = () => ++times === 2 && resolve()
-
-                const [a, b] = step.payload
-                const { [a]: aEl } = barRefs.current
-                const { [b]: bEl } = barRefs.current
-
-                const styles = { borderColor: '#008f8b', boxShadow: '0 0 25px #33a5a2' }
-                anime({ targets: aEl, duration, easing: 'easeInOutCirc', ...styles, complete })
-                anime({ targets: bEl, duration, easing: 'easeInOutCirc', ...styles, complete })
-              }).then(() => new Promise((resolve) => setTimeout(resolve, padding)))
+          case 'IDLE': {
+            return async function idle(): Promise<void> {
+              const { current: barScopes } = barRefs
+              const { current: sliderScopes } = sliderRefs
+              await Promise.all([...barScopes, ...sliderScopes].map((scope) => scope.idle()))
             }
+          }
 
-          case 'EXCHANGE':
-            return function swap(): Promise<void> {
-              return new Promise<void>((resolve) => {
-                let times = 0
-                const complete = () => ++times === 2 && resolve()
-
-                const [a, b] = step.payload
-                const { [a]: aEl } = barRefs.current
-                const { [b]: bEl } = barRefs.current
-                const { left: aLeft } = position[a]
-                const { left: bLeft } = position[b]
-
-                anime({ targets: aEl, duration, easing: 'easeInOutCirc', left: bLeft, complete })
-                anime({ targets: bEl, duration, easing: 'easeInOutCirc', left: aLeft, complete })
-
-                const t = barRefs.current[b]
-                barRefs.current[b] = barRefs.current[a]
-                barRefs.current[a] = t
-              })
+          case 'COMPARE': {
+            return async function compare(): Promise<void> {
+              const [a, b] = step.payload
+              const { [a]: aBarScope, [b]: bBarScope } = barRefs.current
+              const { [a]: aSliderScope, [b]: bSlideRScope } = sliderRefs.current
+              await Promise.all([aBarScope, bBarScope, aSliderScope, bSlideRScope].map((scope) => scope.focus()))
             }
+          }
 
-          case 'UPDATE':
-            return function cooldown(): Promise<void> {
-              const styles = { borderColor: '#ff3179', boxShadow: '0 0 25px #c2255c' }
-              const promises = barRefs.current.map((el) => new Promise((complete) => anime({ targets: el, duration, ...styles, easing: 'easeInOutCirc', complete })))
-              return Promise.all(promises).then(() => new Promise((resolve) => setTimeout(resolve, padding)))
+          case 'INSERT': {
+            return async function insert(): Promise<void> {
+              const { origin, target } = step.payload
+              const { current: scopes } = barRefs
+
+              const scope = scopes.splice(origin, 1)[0]
+              scopes.splice(origin > target ? target : target - 1, 0, scope)
+
+              await Promise.all(
+                scopes.map((scope, index) => {
+                  const { left } = position[index]
+                  return scope.move(left)
+                })
+              )
             }
+          }
+
+          case 'SWAP': {
+            return async function swap(): Promise<void> {
+              const [a, b] = step.payload
+
+              const { current: scopes } = barRefs
+              const { [a]: aScope } = scopes
+              const { [b]: bScope } = scopes
+
+              const { left: aLeft } = position[a]
+              const { left: bLeft } = position[b]
+              await Promise.all([aScope.move(bLeft), bScope.move(aLeft)])
+
+              const t = scopes[b]
+              scopes[b] = scopes[a]
+              scopes[a] = t
+            }
+          }
+
+          case 'MARK': {
+            return async function mark(): Promise<void> {
+              const { current: scopes } = barRefs
+              const indexes = step.payload
+              await Promise.all(indexes.map((index) => scopes[index].freeze()))
+            }
+          }
+
+          case 'FREEZE': {
+            return async function freeze(): Promise<void> {
+              const { current: scopes } = sliderRefs
+              const indexes = step.payload
+              await Promise.all(indexes.map((index) => scopes[index].freeze()))
+            }
+          }
+
+          case 'FREED': {
+            return async function freed(): Promise<void> {
+              const { current: scopes } = sliderRefs
+              await Promise.all(scopes.map((scope) => scope.idle()))
+            }
+          }
+
+          case 'END': {
+            return async function end(): Promise<void> {
+              const { current: barScopes } = barRefs
+              const { current: sliderScopes } = sliderRefs
+              await Promise.all([...barScopes, ...sliderScopes].map((scope) => scope.freeze()))
+            }
+          }
         }
       })
 
@@ -96,7 +147,12 @@ const BarVisualizer: React.FC<BarVisualizerProps> = React.memo(
           ? numbers.map((value, index) => {
               const { width, left } = position[index]
               const height = `${(value / maxValue) * 100}%`
-              return <Bar width={width} height={height} offset={left} value={value} ref={collect} key={value} />
+              return (
+                <Fragment key={value}>
+                  <Bar width={width} height={height} offset={left} value={value} options={{ duration }} ref={collectImperativeRef(barRefs)} />
+                  <Slider width={width} offset={left} options={{ duration }} ref={collectImperativeRef(sliderRefs)} />
+                </Fragment>
+              )
             })
           : null}
       </div>
@@ -110,7 +166,7 @@ const BarVisualizer: React.FC<BarVisualizerProps> = React.memo(
 BarVisualizer.displayName = 'BarVisualizer'
 BarVisualizer.defaultProps = {
   duration: 260,
-  padding: 500,
+  interval: 500,
 }
 
 export default BarVisualizer

@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react'
 import BarVisualizer from './components/BarVisualizer'
-import { Steps } from '../libs/footprint/types'
+import { Action } from '../libs/footprint/types'
 import styles from './styles.module.scss'
 
 type VisualizerProps = {
   numbers: number[]
-  algorithm?: (numbers: number[]) => Steps<number>
+  algorithm?: (numbers: number[]) => Action<number>[]
 }
 
 const Visualizer: React.FC<VisualizerProps> = (props) => {

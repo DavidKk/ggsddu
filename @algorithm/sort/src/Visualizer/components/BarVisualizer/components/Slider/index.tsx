@@ -1,26 +1,21 @@
 import React, { useCallback, useImperativeHandle, useRef } from 'react'
-import classnames from 'classnames'
 import { Colors, Easing } from '../../constants/styles'
 import asyncAnime from '../../../../../utils/asyncAnime'
 import styles from './styles.module.scss'
 
-export interface BarProps {
+export interface SliderProps {
   width: string
-  height: string
   offset: string
-  value: number
   options?: {
     duration?: number
   }
 }
 
-export interface BarImperativeRef {
-  value: BarProps['value']
+export interface SliderImperativeRef {
   idle: () => Promise<void>
   focus: () => Promise<void>
   freeze: () => Promise<void>
   freed: () => Promise<void>
-  move: (offset: string) => Promise<void>
 }
 
 export interface TransitionColorParams {
@@ -28,12 +23,8 @@ export interface TransitionColorParams {
   shadow: string | number
 }
 
-export interface TransitionOffsetParams {
-  offset?: string
-}
-
-const Bar = React.forwardRef<BarImperativeRef, BarProps>((props, ref) => {
-  const { width, height, offset, value, options } = props
+const Slider = React.forwardRef<SliderImperativeRef, SliderProps>((props, ref) => {
+  const { width, offset, options } = props
   const { duration } = options || {}
   const isFreezon = useRef<boolean>(false)
   const masterRef = useRef<HTMLDivElement>()
@@ -42,23 +33,13 @@ const Bar = React.forwardRef<BarImperativeRef, BarProps>((props, ref) => {
     async (params) => {
       const { color, shadow } = params
       const { current: targets } = masterRef
-      const animeParams = { targets, borderColor: color, boxShadow: `0 0 25px ${shadow}`, duration, easing: Easing }
+      const animeParams = { targets, borderColor: color, backgroundColor: color, boxShadow: `0 0 25px ${shadow}`, duration, easing: Easing }
       await asyncAnime(animeParams)
     },
     [duration]
   )
 
-  const transitionOffset = useCallback<(params: TransitionOffsetParams) => Promise<void>>(
-    async (params) => {
-      const { offset } = params
-      const { current: targets } = masterRef
-      await asyncAnime({ targets, left: offset, duration, easing: Easing })
-    },
-    [duration]
-  )
-
   useImperativeHandle(ref, () => ({
-    value: value,
     async idle() {
       if (!isFreezon.current) {
         await transitionColor(Colors.idle)
@@ -77,15 +58,10 @@ const Bar = React.forwardRef<BarImperativeRef, BarProps>((props, ref) => {
       isFreezon.current = false
       await transitionColor(Colors.idle)
     },
-    move: (offset: string) => transitionOffset({ offset }),
   }))
 
-  return (
-    <div className={classnames(styles.bar)} style={{ width, height, left: offset }} ref={masterRef}>
-      <span className={styles.value}>{value}</span>
-    </div>
-  )
+  return <div className={styles.slider} ref={masterRef} style={{ width, left: offset }} />
 })
 
-Bar.displayName = 'Bar'
-export default Bar
+Slider.displayName = 'Slider'
+export default Slider
