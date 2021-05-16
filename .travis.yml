@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-  - 11
+  - 12
 
 cache:
   directories:
@@ -10,21 +10,17 @@ cache:
 install:
   - npm install
 
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-
 script:
   - npm run test
 
 before_deploy:
-  - npm run release
+  - npm run build
 
 deploy:
   - provider: pages
     local_dir: dist
     skip_cleanup: true
     github_token:
-      secure:
+      secure: Aykwv3tn3TqrqyEdAyb+5PmRq7fy0RkRYJPDrJXf+Qag0ALfmv96EAUSud2N0sGRpckry37LLLGD6S4y0rSKEzf9MO9pQRlSYPtnTs04zjbeLAFjDhYRuR2b3/hqTHHv6kx+M/wgU8iSokKbHAI+ZikmZZuP14z7+yIYMT3v7Puil4lGGZoQ03HaD5KwcMu7PHzb3AuR0UxGNZyu1+c0lM3SHcPnX6nXJ62xzgcOEtsqNqjSX1KIJru9R8KcgFS3yrFfqD5AQmy7SzM4dPiie4M1DJviX6c7Nb6nj9qs16X4MyYuN10q2XJ1UqZ9kqAvRVMOIPfKIcoE+gGQPhD2q4Ezc9c3DXw8ihI2z2nHOH4/x2SFPf4KGXme7RN/e939Ija0bYYs2DITzG+ipdGHFMmLdsP891367rww1LEF8MFVI/Bw2QUBBa05kyxhvQC01c5tGmT1nrWU7X/x9cOq5xrlkbPKGxDqi4Pl2C6fdnTHZP/kgtHzdVw16eSLacSBlgsnwxouh8Ns1cAqjoqaBJC+lSGu+xZ4jwXQDygP+xN0NmVSaLuRFF8ZSgegrDLV+jaK0wbIIdsiB7qzWsCPx9/OTA1wROQowuDYQACxC9dmpeCiDS+AFq9bFbnMxMbEHb3IPNVkyQ2hZBruZmyjPYWJbqgRGUsiVNIu9kLHTQg=
     on:
       branch: master
